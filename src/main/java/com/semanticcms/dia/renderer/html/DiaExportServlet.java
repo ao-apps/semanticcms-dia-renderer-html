@@ -26,12 +26,12 @@ import com.aoapps.lang.io.ContentType;
 import com.aoapps.lang.io.FileUtils;
 import com.aoapps.lang.validation.ValidationException;
 import com.aoapps.net.Path;
+import com.aoapps.servlet.attribute.ScopeEE;
 import com.semanticcms.core.controller.Book;
 import com.semanticcms.core.controller.SemanticCMS;
 import com.semanticcms.core.model.BookRef;
 import com.semanticcms.core.model.ResourceRef;
 import com.semanticcms.dia.model.Dia;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -117,7 +117,7 @@ public class DiaExportServlet extends HttpServlet {
 				resourceRef,
 				width,
 				height,
-				(File)getServletContext().getAttribute("javax.servlet.context.tempdir" /*ServletContext.TEMPDIR*/)
+				ScopeEE.Application.TEMPDIR.context(getServletContext()).get()
 			);
 		} catch(InterruptedException e) {
 			throw new ServletException(e);

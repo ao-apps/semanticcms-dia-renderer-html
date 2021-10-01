@@ -35,6 +35,7 @@ import com.aoapps.lang.exception.WrappedException;
 import com.aoapps.lang.util.Sequence;
 import com.aoapps.lang.util.UnsynchronizedSequence;
 import com.aoapps.net.URIEncoder;
+import com.aoapps.servlet.attribute.ScopeEE;
 import com.aoapps.servlet.lastmodified.LastModifiedServlet;
 import com.semanticcms.core.controller.ConcurrencyCoordinator;
 import com.semanticcms.core.controller.ResourceRefResolver;
@@ -96,7 +97,8 @@ final public class DiaHtmlRenderer {
 	/**
 	 * The request key used to ensure per-request unique element IDs.
 	 */
-	private static final String ID_SEQUENCE_REQUEST_ATTRIBUTE = DiaHtmlRenderer.class.getName() + ".idSequence";
+	private static final ScopeEE.Request.Attribute<Sequence> ID_SEQUENCE_REQUEST_ATTRIBUTE =
+		ScopeEE.REQUEST.attribute(DiaHtmlRenderer.class.getName() + ".idSequence");
 
 	/**
 	 * The alt link ID prefix.
@@ -390,7 +392,7 @@ final public class DiaHtmlRenderer {
 					if(resource == null) {
 						exports = null;
 					} else {
-						final File tempDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir" /*ServletContext.TEMPDIR*/);
+						final File tempDir = ScopeEE.Application.TEMPDIR.context(servletContext).get();
 						final int finalWidth = width;
 						final int finalHeight = height;
 						// TODO: Avoid concurrent tasks when all diagrams are already up-to-date?
@@ -420,11 +422,8 @@ final public class DiaHtmlRenderer {
 					// Get the thumbnail image in default pixel density
 					DiaExport export = exports == null ? null : exports.get(0);
 					// Find id sequence
-					Sequence idSequence = (Sequence)request.getAttribute(ID_SEQUENCE_REQUEST_ATTRIBUTE);
-					if(idSequence == null) {
-						idSequence = new UnsynchronizedSequence();
-						request.setAttribute(ID_SEQUENCE_REQUEST_ATTRIBUTE, idSequence);
-					}
+					Sequence idSequence = ID_SEQUENCE_REQUEST_ATTRIBUTE.context(request)
+						.computeIfAbsent(__ -> new UnsynchronizedSequence());
 					// Write the img tag
 					String refId = PageIndex.getRefIdInPage(request, dia.getPage(), dia.getId());
 					final String urlPath;
