@@ -66,7 +66,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-final public class DiaHtmlRenderer {
+public final class DiaHtmlRenderer {
 
 	private static final String LINUX_DIA_PATH = "/usr/bin/dia";
 
