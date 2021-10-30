@@ -544,6 +544,8 @@ public final class DiaHtmlRenderer {
 				}
 			}
 		} catch(InterruptedException e) {
+			// Restore the interrupted status
+			Thread.currentThread().interrupt();
 			throw new ServletException(e);
 		}
 	}
