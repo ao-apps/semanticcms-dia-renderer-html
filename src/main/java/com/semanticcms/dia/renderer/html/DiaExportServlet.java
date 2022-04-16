@@ -1,6 +1,6 @@
 /*
  * semanticcms-dia-renderer-html - Dia-based diagrams embedded in HTML in a Servlet environment.
- * Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -20,6 +20,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with semanticcms-dia-renderer-html.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.semanticcms.dia.renderer.html;
 
 import com.aoapps.lang.io.ContentType;

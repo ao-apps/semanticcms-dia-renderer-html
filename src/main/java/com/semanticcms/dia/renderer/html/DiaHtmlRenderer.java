@@ -20,6 +20,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with semanticcms-dia-renderer-html.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.semanticcms.dia.renderer.html;
 
 import com.aoapps.concurrent.KeyedConcurrencyReducer;
