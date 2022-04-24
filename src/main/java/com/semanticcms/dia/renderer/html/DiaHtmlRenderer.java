@@ -81,7 +81,9 @@ public final class DiaHtmlRenderer {
   // This was used for opening the diagram, moved to semanticcms-openfile-servlet to avoid dependency.
   //private static final String WINDOWS_DIAW_PATH = "C:\\Program Files (x86)\\Dia\\bin\\diaw.exe";
 
-  private static class TempDirLock {/* Empty lock class to help heap profile */}
+  private static class TempDirLock {
+    // Empty lock class to help heap profile
+  }
   private static final TempDirLock tempDirLock = new TempDirLock();
   private static final String TEMP_SUBDIR = DiaExport.class.getName();
 
@@ -104,7 +106,7 @@ public final class DiaHtmlRenderer {
    * The request key used to ensure per-request unique element IDs.
    */
   private static final ScopeEE.Request.Attribute<Sequence> ID_SEQUENCE_REQUEST_ATTRIBUTE =
-    ScopeEE.REQUEST.attribute(DiaHtmlRenderer.class.getName() + ".idSequence");
+      ScopeEE.REQUEST.attribute(DiaHtmlRenderer.class.getName() + ".idSequence");
 
   /**
    * The alt link ID prefix.
@@ -120,10 +122,10 @@ public final class DiaHtmlRenderer {
    * The supported pixel densities, these must be ordered from lowest to highest.  The first is the default.
    */
   private static final int[] PIXEL_DENSITIES = {
-    1,
-    2,
-    3,
-    4
+      1,
+      2,
+      3,
+      4
   };
 
   private static boolean isWindows() {
@@ -155,28 +157,28 @@ public final class DiaHtmlRenderer {
   private static final KeyedConcurrencyReducer<File, Void> exportConcurrencyLimiter = new KeyedConcurrencyReducer<>();
 
   public static DiaExport exportDiagram(
-    ServletContext servletContext,
-    ResourceRef resourceRef,
-    final Integer width,
-    final Integer height,
-    File tmpDir
+      ServletContext servletContext,
+      ResourceRef resourceRef,
+      final Integer width,
+      final Integer height,
+      File tmpDir
   ) throws InterruptedException, FileNotFoundException, IOException {
     final Resource resource = SemanticCMS
-      .getInstance(servletContext)
-      .getBook(resourceRef.getBookRef())
-      .getResources()
-      .getResource(resourceRef.getPath())
+        .getInstance(servletContext)
+        .getBook(resourceRef.getBookRef())
+        .getResources()
+        .getResource(resourceRef.getPath())
     ;
     return exportDiagram(servletContext, resourceRef, resource, width, height, tmpDir);
   }
 
   public static DiaExport exportDiagram(
-    ServletContext servletContext,
-    ResourceRef resourceRef,
-    final Resource resource,
-    final Integer width,
-    final Integer height,
-    File tmpDir
+      ServletContext servletContext,
+      ResourceRef resourceRef,
+      final Resource resource,
+      final Integer width,
+      final Integer height,
+      File tmpDir
   ) throws InterruptedException, FileNotFoundException, IOException {
     BookRef bookRef = resourceRef.getBookRef();
     String diaPath = resourceRef.getPath().toString();
@@ -188,15 +190,15 @@ public final class DiaHtmlRenderer {
     final File tmpFile;
     synchronized (tempDirLock) {
       tmpFile = new File(
-        tmpDir,
-        TEMP_SUBDIR
-          + bookRef.getPrefix().replace('/', File.separatorChar)
-          + diaPath.replace('/', File.separatorChar)
-          + "-"
-          + (width == null ? "_" : width.toString())
-          + "x"
-          + (height == null ? "_" : height.toString())
-          + PNG_EXTENSION
+          tmpDir,
+          TEMP_SUBDIR
+              + bookRef.getPrefix().replace('/', File.separatorChar)
+              + diaPath.replace('/', File.separatorChar)
+              + "-"
+              + (width == null ? "_" : width.toString())
+              + "x"
+              + (height == null ? "_" : height.toString())
+              + PNG_EXTENSION
       );
       // Make temp directory if needed (and all parents)
       tmpDir = tmpFile.getParentFile();
@@ -207,94 +209,94 @@ public final class DiaHtmlRenderer {
     // Re-export when missing or timestamps indicate needs recreated
     try {
       exportConcurrencyLimiter.executeSerialized(
-        tmpFile,
-        () -> {
-          try (ResourceConnection conn = resource.open()) {
-            // TODO: Handle 0 for unknown last modified, similar to properties file auto-loaded by JSP
-            long resourceLastModified = conn.getLastModified();
-            boolean scaleNow;
-            if (!tmpFile.exists()) {
-              scaleNow = true;
-            } else {
+          tmpFile,
+          () -> {
+            try (ResourceConnection conn = resource.open()) {
               // TODO: Handle 0 for unknown last modified, similar to properties file auto-loaded by JSP
-              long timeDiff = resourceLastModified - tmpFile.lastModified();
-              scaleNow =
-                timeDiff >= FILESYSTEM_TIMESTAMP_TOLERANCE
-                || timeDiff <= -FILESYSTEM_TIMESTAMP_TOLERANCE // system time reset?
-              ;
-            }
-            if (scaleNow) {
-              // Determine size for scaling
-              final String sizeParam;
-              if (width == null) {
-                if (height == null) {
-                  sizeParam = null;
-                } else {
-                  sizeParam = "x" + height;
-                }
+              long resourceLastModified = conn.getLastModified();
+              boolean scaleNow;
+              if (!tmpFile.exists()) {
+                scaleNow = true;
               } else {
-                if (height == null) {
-                  sizeParam = width + "x";
+                // TODO: Handle 0 for unknown last modified, similar to properties file auto-loaded by JSP
+                long timeDiff = resourceLastModified - tmpFile.lastModified();
+                scaleNow =
+                    timeDiff >= FILESYSTEM_TIMESTAMP_TOLERANCE
+                        || timeDiff <= -FILESYSTEM_TIMESTAMP_TOLERANCE // system time reset?
+                ;
+              }
+              if (scaleNow) {
+                // Determine size for scaling
+                final String sizeParam;
+                if (width == null) {
+                  if (height == null) {
+                    sizeParam = null;
+                  } else {
+                    sizeParam = "x" + height;
+                  }
                 } else {
-                  sizeParam = width + "x" + height;
-                }
-              }
-              // Get the file
-              File diaFile = conn.getFile();
-
-              // Build the command
-              final String diaExePath = getDiaExportPath();
-              final String[] command;
-              if (sizeParam == null) {
-                command = new String[] {
-                  diaExePath,
-                  "--export=" + tmpFile.getCanonicalPath(),
-                  "--filter=png",
-                  "--log-to-stderr",
-                  diaFile.getCanonicalPath()
-                };
-              } else {
-                command = new String[] {
-                  diaExePath,
-                  "--export=" + tmpFile.getCanonicalPath(),
-                  "--filter=png",
-                  "--size=" + sizeParam,
-                  "--log-to-stderr",
-                  diaFile.getCanonicalPath()
-                };
-              }
-              // Export using dia
-              ProcessResult result = ProcessResult.exec(command);
-              int exitVal = result.getExitVal();
-              if (exitVal != 0) {
-                throw new IOException(diaExePath + ": non-zero exit value: " + exitVal);
-              }
-              if (!isWindows()) {
-                // Dia does not set non-zero exit value, instead, it writes both errors and normal output to stderr
-                // (Dia version 0.97.2, compiled 23:51:04 Apr 13 2012)
-                String normalOutput = diaFile.getCanonicalPath() + " --> " + tmpFile.getCanonicalPath();
-                // Read the standard error, if any one line matches the expected line, then it is OK
-                // other lines include stuff like: Xlib:  extension "RANDR" missing on display ":0".
-                boolean foundNormalOutput = false;
-                String stderr = result.getStderr();
-                try (BufferedReader errIn = new BufferedReader(new StringReader(stderr))) {
-                  String line;
-                  while ((line = errIn.readLine()) != null) {
-                    if (line.equals(normalOutput)) {
-                      foundNormalOutput = true;
-                      break;
-                    }
+                  if (height == null) {
+                    sizeParam = width + "x";
+                  } else {
+                    sizeParam = width + "x" + height;
                   }
                 }
-                if (!foundNormalOutput) {
-                  throw new IOException(diaExePath + ": " + stderr);
+                // Get the file
+                File diaFile = conn.getFile();
+
+                // Build the command
+                final String diaExePath = getDiaExportPath();
+                final String[] command;
+                if (sizeParam == null) {
+                  command = new String[]{
+                      diaExePath,
+                      "--export=" + tmpFile.getCanonicalPath(),
+                      "--filter=png",
+                      "--log-to-stderr",
+                      diaFile.getCanonicalPath()
+                  };
+                } else {
+                  command = new String[]{
+                      diaExePath,
+                      "--export=" + tmpFile.getCanonicalPath(),
+                      "--filter=png",
+                      "--size=" + sizeParam,
+                      "--log-to-stderr",
+                      diaFile.getCanonicalPath()
+                  };
                 }
+                // Export using dia
+                ProcessResult result = ProcessResult.exec(command);
+                int exitVal = result.getExitVal();
+                if (exitVal != 0) {
+                  throw new IOException(diaExePath + ": non-zero exit value: " + exitVal);
+                }
+                if (!isWindows()) {
+                  // Dia does not set non-zero exit value, instead, it writes both errors and normal output to stderr
+                  // (Dia version 0.97.2, compiled 23:51:04 Apr 13 2012)
+                  String normalOutput = diaFile.getCanonicalPath() + " --> " + tmpFile.getCanonicalPath();
+                  // Read the standard error, if any one line matches the expected line, then it is OK
+                  // other lines include stuff like: Xlib:  extension "RANDR" missing on display ":0".
+                  boolean foundNormalOutput = false;
+                  String stderr = result.getStderr();
+                  try (BufferedReader errIn = new BufferedReader(new StringReader(stderr))) {
+                    String line;
+                    while ((line = errIn.readLine()) != null) {
+                      if (line.equals(normalOutput)) {
+                        foundNormalOutput = true;
+                        break;
+                      }
+                    }
+                  }
+                  if (!foundNormalOutput) {
+                    throw new IOException(diaExePath + ": " + stderr);
+                  }
+                }
+                tmpFile.setLastModified(resourceLastModified);
               }
-              tmpFile.setLastModified(resourceLastModified);
+              return null;
             }
-            return null;
           }
-        }
       );
     } catch (ExecutionException e) {
       // Maintain expected exception types while not losing stack trace
@@ -310,19 +312,19 @@ public final class DiaHtmlRenderer {
     Dimension pngSize = ImageSizeCache.getImageSize(tmpFile);
 
     return new DiaExport(
-      tmpFile,
-      pngSize.width,
-      pngSize.height
+        tmpFile,
+        pngSize.width,
+        pngSize.height
     );
   }
 
   private static String buildUrlPath(
-    HttpServletRequest request,
-    ResourceRef resourceRef,
-    int width,
-    int height,
-    int pixelDensity,
-    DiaExport export
+      HttpServletRequest request,
+      ResourceRef resourceRef,
+      int width,
+      int height,
+      int pixelDensity,
+      DiaExport export
   ) throws ServletException {
     String diaPath = resourceRef.getPath().toString();
     // Strip extension
@@ -332,11 +334,11 @@ public final class DiaHtmlRenderer {
     diaPath = diaPath.substring(0, diaPath.length() - Dia.DOT_EXTENSION.length());
     StringBuilder urlPath = new StringBuilder();
     urlPath
-      .append(request.getContextPath())
-      .append(DiaExportServlet.SERVLET_PATH)
-      .append(resourceRef.getBookRef().getPrefix())
-      .append(diaPath)
-      .append(SIZE_SEPARATOR);
+        .append(request.getContextPath())
+        .append(DiaExportServlet.SERVLET_PATH)
+        .append(resourceRef.getBookRef().getPrefix())
+        .append(diaPath)
+        .append(SIZE_SEPARATOR);
     if (width == 0) {
       urlPath.append(EMPTY_SIZE);
     } else {
@@ -354,10 +356,10 @@ public final class DiaHtmlRenderer {
       long lastModified = export.getTmpFile().lastModified();
       if (lastModified != 0) {
         urlPath
-          .append('?')
-          .append(LastModifiedServlet.LAST_MODIFIED_PARAMETER_NAME)
-          .append('=')
-          .append(LastModifiedServlet.encodeLastModified(lastModified))
+            .append('?')
+            .append(LastModifiedServlet.LAST_MODIFIED_PARAMETER_NAME)
+            .append('=')
+            .append(LastModifiedServlet.encodeLastModified(lastModified))
         ;
       }
     }
@@ -368,11 +370,11 @@ public final class DiaHtmlRenderer {
    * @param  content  {@link AnyPhrasingContent} provides {@link AnyIMG}, {@link AnyA}, and {@link AnySCRIPT}.
    */
   public static void writeDiaImpl(
-    ServletContext servletContext,
-    HttpServletRequest request,
-    HttpServletResponse response,
-    AnyPhrasingContent<?, ?> content,
-    Dia dia
+      ServletContext servletContext,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AnyPhrasingContent<?, ?> content,
+      Dia dia
   ) throws ServletException, IOException {
     try {
       // Get the current capture state
@@ -389,9 +391,9 @@ public final class DiaHtmlRenderer {
           final Resource resource;
           {
             ResourceStore restoreStore = SemanticCMS
-              .getInstance(servletContext)
-              .getBook(resourceRef.getBookRef())
-              .getResources()
+                .getInstance(servletContext)
+                .getBook(resourceRef.getBookRef())
+                .getResources()
             ;
             if (restoreStore == null || !restoreStore.isAvailable()) {
               resource = null;
@@ -414,17 +416,17 @@ public final class DiaHtmlRenderer {
             // TODO: Avoid concurrent tasks when all diagrams are already up-to-date?
             // TODO: Fetch resource file once when first needed?
             List<Callable<DiaExport>> tasks = new ArrayList<>(PIXEL_DENSITIES.length);
-            for (int i=0; i<PIXEL_DENSITIES.length; i++) {
+            for (int i = 0; i < PIXEL_DENSITIES.length; i++) {
               final int pixelDensity = PIXEL_DENSITIES[i];
               tasks.add(
-                () -> exportDiagram(
-                  servletContext,
-                  resourceRef,
-                  resource,
-                  finalWidth == 0 ? null : (finalWidth * pixelDensity),
-                  finalHeight == 0 ? null : (finalHeight * pixelDensity),
-                  tempDir
-                )
+                  () -> exportDiagram(
+                      servletContext,
+                      resourceRef,
+                      resource,
+                      finalWidth == 0 ? null : (finalWidth * pixelDensity),
+                      finalHeight == 0 ? null : (finalHeight * pixelDensity),
+                      tempDir
+                  )
               );
             }
             try {
@@ -439,42 +441,42 @@ public final class DiaHtmlRenderer {
           DiaExport export = exports == null ? null : exports.get(0);
           // Find id sequence
           Sequence idSequence = ID_SEQUENCE_REQUEST_ATTRIBUTE.context(request)
-            .computeIfAbsent(__ -> new UnsynchronizedSequence());
+              .computeIfAbsent(__ -> new UnsynchronizedSequence());
           // Write the img tag
           String refId = PageIndex.getRefIdInPage(request, dia.getPage(), dia.getId());
           final String urlPath;
           if (export != null) {
             urlPath = buildUrlPath(
-              request,
-              resourceRef,
-              width,
-              height,
-              PIXEL_DENSITIES[0],
-              export
+                request,
+                resourceRef,
+                width,
+                height,
+                PIXEL_DENSITIES[0],
+                export
             );
           } else {
             urlPath =
-              request.getContextPath()
-              + MISSING_IMAGE_PATH
+                request.getContextPath()
+                    + MISSING_IMAGE_PATH
             ;
           }
           content.img()
-            .id(refId)
-            .src(response.encodeURL(URIEncoder.encodeURI(urlPath)))
-            .width(
+              .id(refId)
+              .src(response.encodeURL(URIEncoder.encodeURI(urlPath)))
+              .width(
+                  export != null
+                      ? (export.getWidth() / PIXEL_DENSITIES[0])
+                      : width != 0
+                      ? width
+                      : (MISSING_IMAGE_WIDTH * height / MISSING_IMAGE_HEIGHT)
+              ).height(
               export != null
-              ? (export.getWidth() / PIXEL_DENSITIES[0])
-              : width != 0
-              ? width
-              : (MISSING_IMAGE_WIDTH * height / MISSING_IMAGE_HEIGHT)
-            ).height(
-              export != null
-              ? (export.getHeight() / PIXEL_DENSITIES[0])
-              : height != 0
-              ? height
-              : (MISSING_IMAGE_HEIGHT * width / MISSING_IMAGE_WIDTH)
-            ).alt(dia.getLabel())
-          .__();
+                  ? (export.getHeight() / PIXEL_DENSITIES[0])
+                  : height != 0
+                  ? height
+                  : (MISSING_IMAGE_HEIGHT * width / MISSING_IMAGE_WIDTH)
+          ).alt(dia.getLabel())
+              .__();
           //if (resourceFile == null) {
           //  LinkImpl.writeBrokenPathInXhtmlAttribute(pageRef, out);
           //} else {
@@ -486,7 +488,7 @@ public final class DiaHtmlRenderer {
             assert exports != null;
             // Write links to the exports for higher pixel densities
             long[] altLinkNums = new long[PIXEL_DENSITIES.length];
-            for (int i=0; i<PIXEL_DENSITIES.length; i++) {
+            for (int i = 0; i < PIXEL_DENSITIES.length; i++) {
               int pixelDensity = PIXEL_DENSITIES[i];
               // Get the thumbnail image in alternate pixel density
               DiaExport altExport = exports.get(i);
@@ -494,20 +496,20 @@ public final class DiaHtmlRenderer {
               long altLinkNum = idSequence.getNextSequenceValue();
               altLinkNums[i] = altLinkNum;
               final String altUrlPath = buildUrlPath(
-                request,
-                resourceRef,
-                width,
-                height,
-                pixelDensity,
-                altExport
+                  request,
+                  resourceRef,
+                  width,
+                  height,
+                  pixelDensity,
+                  altExport
               );
               content.a()
-                .id(id -> id.append(ALT_LINK_ID_PREFIX).append(Long.toString(altLinkNum)))
-                .style("display:none")
-                .href(response.encodeURL(URIEncoder.encodeURI(altUrlPath)))
-              .__(a -> a
-                .text('x').text(pixelDensity)
-              );
+                  .id(id -> id.append(ALT_LINK_ID_PREFIX).append(Long.toString(altLinkNum)))
+                  .style("display:none")
+                  .href(response.encodeURL(URIEncoder.encodeURI(altUrlPath)))
+                  .__(a -> a
+                          .text('x').text(pixelDensity)
+                  );
             }
             // Write script to hide alt links and select best based on device pixel ratio
             try (JavaScriptWriter script = content.script()._c()) {
@@ -526,7 +528,7 @@ public final class DiaHtmlRenderer {
               // scriptOut.write("  window.alert(\"devicePixelRatio=\" + window.devicePixelRatio);\n");
               // Function to update src
               script.write("    function updateImageSrc() {\n");
-              for (int i=PIXEL_DENSITIES.length - 1; i >= 0; i--) {
+              for (int i = PIXEL_DENSITIES.length - 1; i >= 0; i--) {
                 long altLinkNum = altLinkNums[i];
                 script.write("      ");
                 if (i != (PIXEL_DENSITIES.length - 1)) {
@@ -534,7 +536,7 @@ public final class DiaHtmlRenderer {
                 }
                 if (i > 0) {
                   script.write("if (window.devicePixelRatio > ");
-                  script.write(Integer.toString(PIXEL_DENSITIES[i-1]));
+                  script.write(Integer.toString(PIXEL_DENSITIES[i - 1]));
                   script.write(") ");
                 }
                 script.append("{\n"
@@ -542,11 +544,11 @@ public final class DiaHtmlRenderer {
                     + "      }\n");
               }
               script.write("    }\n"
-                // Perform initial setup
-                + "    updateImageSrc();\n");
+                  // Perform initial setup
+                  + "    updateImageSrc();\n");
               // Change image source when pixel ratio changes
               script.write("    if (window.matchMedia) {\n");
-              for (int i=0; i<PIXEL_DENSITIES.length; i++) {
+              for (int i = 0; i < PIXEL_DENSITIES.length; i++) {
                 int pixelDensity = PIXEL_DENSITIES[i];
                 script.write("      window.matchMedia(\"screen and (max-resolution: ");
                 script.write(Integer.toString(pixelDensity));
@@ -555,8 +557,8 @@ public final class DiaHtmlRenderer {
                     + "      });\n");
               }
               script.write("    }\n"
-                + "  })();\n"
-                + "}");
+                  + "  })();\n"
+                  + "}");
             }
           }
         }

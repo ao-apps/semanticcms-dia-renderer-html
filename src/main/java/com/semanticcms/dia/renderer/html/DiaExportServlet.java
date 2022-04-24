@@ -67,7 +67,7 @@ public class DiaExportServlet extends HttpServlet {
     if (dimSepPos == -1) {
       return null;
     }
-    String heightStr = pathInfo.substring(dimSepPos+1, pathInfo.length() - DiaHtmlRenderer.PNG_EXTENSION.length());
+    String heightStr = pathInfo.substring(dimSepPos + 1, pathInfo.length() - DiaHtmlRenderer.PNG_EXTENSION.length());
     //log("heightStr=" +heightStr);
     Integer height;
     if (heightStr.length() == 1 && heightStr.charAt(0) == DiaHtmlRenderer.EMPTY_SIZE) {
@@ -81,11 +81,11 @@ public class DiaExportServlet extends HttpServlet {
     }
     //log("height=" +height);
     // Find width
-    int sizeSepPos = pathInfo.lastIndexOf(DiaHtmlRenderer.SIZE_SEPARATOR, dimSepPos-1);
+    int sizeSepPos = pathInfo.lastIndexOf(DiaHtmlRenderer.SIZE_SEPARATOR, dimSepPos - 1);
     if (sizeSepPos == -1) {
       return null;
     }
-    String widthStr = pathInfo.substring(sizeSepPos+1, dimSepPos);
+    String widthStr = pathInfo.substring(sizeSepPos + 1, dimSepPos);
     //log("widthStr=" +widthStr);
     Integer width;
     if (widthStr.length() == 1 && widthStr.charAt(0) == DiaHtmlRenderer.EMPTY_SIZE) {
@@ -115,8 +115,8 @@ public class DiaExportServlet extends HttpServlet {
       assert combinedPath.startsWith(prefix);
       try {
         resourceRef = new ResourceRef(
-          bookRef,
-          Path.valueOf(combinedPath.substring(prefix.length()))
+            bookRef,
+            Path.valueOf(combinedPath.substring(prefix.length()))
         );
       } catch (ValidationException e) {
         return null;
@@ -126,11 +126,11 @@ public class DiaExportServlet extends HttpServlet {
     // Get the thumbnail image
     try {
       return DiaHtmlRenderer.exportDiagram(
-        getServletContext(),
-        resourceRef,
-        width,
-        height,
-        ScopeEE.Application.TEMPDIR.context(getServletContext()).get()
+          getServletContext(),
+          resourceRef,
+          width,
+          height,
+          ScopeEE.Application.TEMPDIR.context(getServletContext()).get()
       );
     } catch (InterruptedException e) {
       // Restore the interrupted status
