@@ -41,4 +41,4 @@ module com.semanticcms.dia.renderer.html {
   requires com.semanticcms.dia.model; // <groupId>com.semanticcms</groupId><artifactId>semanticcms-dia-model</artifactId>
   // Java SE
   requires java.desktop;
-}
+} // TODO: Avoiding rewrite-maven-plugin-4.22.2 truncation
