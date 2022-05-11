@@ -86,6 +86,7 @@ public final class DiaHtmlRenderer {
       // Empty lock class to help heap profile
     }
   }
+
   private static final TempDirLock tempDirLock = new TempDirLock();
   private static final String TEMP_SUBDIR = DiaExport.class.getName();
 
@@ -169,8 +170,7 @@ public final class DiaHtmlRenderer {
         .getInstance(servletContext)
         .getBook(resourceRef.getBookRef())
         .getResources()
-        .getResource(resourceRef.getPath())
-    ;
+        .getResource(resourceRef.getPath());
     return exportDiagram(servletContext, resourceRef, resource, width, height, tmpDir);
   }
 
@@ -224,8 +224,7 @@ public final class DiaHtmlRenderer {
                 long timeDiff = resourceLastModified - tmpFile.lastModified();
                 scaleNow =
                     timeDiff >= FILESYSTEM_TIMESTAMP_TOLERANCE
-                        || timeDiff <= -FILESYSTEM_TIMESTAMP_TOLERANCE // system time reset?
-                ;
+                        || timeDiff <= -FILESYSTEM_TIMESTAMP_TOLERANCE; // system time reset?
               }
               if (scaleNow) {
                 // Determine size for scaling
@@ -361,14 +360,15 @@ public final class DiaHtmlRenderer {
             .append('?')
             .append(LastModifiedServlet.LAST_MODIFIED_PARAMETER_NAME)
             .append('=')
-            .append(LastModifiedServlet.encodeLastModified(lastModified))
-        ;
+            .append(LastModifiedServlet.encodeLastModified(lastModified));
       }
     }
     return urlPath.toString();
   }
 
   /**
+   * Renders the diagram HTML.
+   *
    * @param  content  {@link AnyPhrasingContent} provides {@link AnyIMG}, {@link AnyA}, and {@link AnySCRIPT}.
    */
   public static void writeDiaImpl(
@@ -391,22 +391,21 @@ public final class DiaHtmlRenderer {
             width = DEFAULT_WIDTH;
           }
           final Resource resource;
-          {
-            ResourceStore restoreStore = SemanticCMS
-                .getInstance(servletContext)
-                .getBook(resourceRef.getBookRef())
-                .getResources()
-            ;
-            if (restoreStore == null || !restoreStore.isAvailable()) {
-              resource = null;
-            } else {
-              Resource r = restoreStore.getResource(resourceRef.getPath());
-              if (!r.exists()) {
-                r = null;
+            {
+              ResourceStore restoreStore = SemanticCMS
+                  .getInstance(servletContext)
+                  .getBook(resourceRef.getBookRef())
+                  .getResources();
+              if (restoreStore == null || !restoreStore.isAvailable()) {
+                resource = null;
+              } else {
+                Resource r = restoreStore.getResource(resourceRef.getPath());
+                if (!r.exists()) {
+                  r = null;
+                }
+                resource = r;
               }
-              resource = r;
             }
-          }
           // Scale concurrently for each pixel density
           List<DiaExport> exports;
           if (resource == null) {
@@ -443,7 +442,7 @@ public final class DiaHtmlRenderer {
           DiaExport export = exports == null ? null : exports.get(0);
           // Find id sequence
           Sequence idSequence = ID_SEQUENCE_REQUEST_ATTRIBUTE.context(request)
-              .computeIfAbsent(__ -> new UnsynchronizedSequence());
+              .computeIfAbsent(name -> new UnsynchronizedSequence());
           // Write the img tag
           String refId = PageIndex.getRefIdInPage(request, dia.getPage(), dia.getId());
           final String urlPath;
@@ -459,8 +458,7 @@ public final class DiaHtmlRenderer {
           } else {
             urlPath =
                 request.getContextPath()
-                    + MISSING_IMAGE_PATH
-            ;
+                    + MISSING_IMAGE_PATH;
           }
           content.img()
               .id(refId)
@@ -495,7 +493,7 @@ public final class DiaHtmlRenderer {
               // Get the thumbnail image in alternate pixel density
               DiaExport altExport = exports.get(i);
               // Write the a tag to additional pixel densities
-              long altLinkNum = idSequence.getNextSequenceValue();
+              final long altLinkNum = idSequence.getNextSequenceValue();
               altLinkNums[i] = altLinkNum;
               final String altUrlPath = buildUrlPath(
                   request,
@@ -510,14 +508,14 @@ public final class DiaHtmlRenderer {
                   .style("display:none")
                   .href(response.encodeURL(URIEncoder.encodeURI(altUrlPath)))
                   .__(a -> a
-                          .text('x').text(pixelDensity)
+                      .text('x').text(pixelDensity)
                   );
             }
             // Write script to hide alt links and select best based on device pixel ratio
             try (JavaScriptWriter script = content.script()._c()) {
               // hide alt links
               //for (int i=1; i<PIXEL_DENSITIES.length; i++) {
-              //  long altLinkNum = altLinkNums[i];
+              //  final long altLinkNum = altLinkNums[i];
               //  scriptOut
               //    .write("document.getElementById(\"" + ALT_LINK_ID_PREFIX)
               //    .write(Long.toString(altLinkNum))
@@ -531,7 +529,7 @@ public final class DiaHtmlRenderer {
               // Function to update src
               script.write("    function updateImageSrc() {\n");
               for (int i = PIXEL_DENSITIES.length - 1; i >= 0; i--) {
-                long altLinkNum = altLinkNums[i];
+                final long altLinkNum = altLinkNums[i];
                 script.write("      ");
                 if (i != (PIXEL_DENSITIES.length - 1)) {
                   script.write("else ");
