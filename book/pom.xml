@@ -36,15 +36,15 @@ along with semanticcms-dia-renderer-html.  If not, see <https://www.gnu.org/lice
     <module.name>com.semanticcms.dia.renderer.html.book</module.name>
     <!-- These values are copied from the project being documented -->
     <documented.artifactId>semanticcms-dia-renderer-html</documented.artifactId>
-    <documented.name>SemanticCMS Dia Renderer HTML²</documented.name>
+    <documented.name>SemanticCMS Dia Renderer HTML</documented.name>
     <documented.description>Dia-based diagrams embedded in HTML in a Servlet environment.</documented.description>
 
     <description.html><![CDATA[Documentation for <a target="${javadoc.target}" href="${project.url}">${documented.name}</a> in <a target="${javadoc.target}" href="https://semanticcms.com/">SemanticCMS</a> format.]]></description.html>
   </properties>
 
-  <name>SemanticCMS Dia Renderer HTML² Book</name>
+  <name>SemanticCMS Dia Renderer HTML Book</name>
   <url>https://semanticcms.com/dia/renderer/html/</url>
-  <description>Documentation for SemanticCMS Dia Renderer HTML² in SemanticCMS format.</description>
+  <description>Documentation for SemanticCMS Dia Renderer HTML in SemanticCMS format.</description>
   <inceptionYear>2013</inceptionYear>
 
   <licenses>

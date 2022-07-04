@@ -46,7 +46,7 @@ along with semanticcms-dia-renderer-html.  If not, see <https://www.gnu.org/lice
     <sonar.coverage.exclusions>**.*</sonar.coverage.exclusions>
   </properties>
 
-  <name>SemanticCMS Dia Renderer HTML²</name>
+  <name>SemanticCMS Dia Renderer HTML</name>
   <url>https://semanticcms.com/dia/renderer/html/</url>
   <description>Dia-based diagrams embedded in HTML in a Servlet environment.</description>
   <inceptionYear>2013</inceptionYear>
