@@ -1,6 +1,6 @@
 /*
  * semanticcms-dia-renderer-html - Dia-based diagrams embedded in HTML in a Servlet environment.
- * Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
+ * Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2024, 2025  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -293,7 +293,7 @@ public final class DiaHtmlRenderer {
                     throw new IOException(diaExePath + ": " + stderr);
                   }
                 }
-                tmpFile.setLastModified(resourceLastModified);
+                FileUtils.setLastModified(tmpFile, resourceLastModified);
               }
               return null;
             }
