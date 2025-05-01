@@ -392,21 +392,21 @@ public final class DiaHtmlRenderer {
             width = DEFAULT_WIDTH;
           }
           final Resource resource;
-            {
-              ResourceStore restoreStore = SemanticCMS
-                  .getInstance(servletContext)
-                  .getBook(resourceRef.getBookRef())
-                  .getResources();
-              if (restoreStore == null || !restoreStore.isAvailable()) {
-                resource = null;
-              } else {
-                Resource r = restoreStore.getResource(resourceRef.getPath());
-                if (!r.exists()) {
-                  r = null;
-                }
-                resource = r;
+          {
+            ResourceStore restoreStore = SemanticCMS
+                .getInstance(servletContext)
+                .getBook(resourceRef.getBookRef())
+                .getResources();
+            if (restoreStore == null || !restoreStore.isAvailable()) {
+              resource = null;
+            } else {
+              Resource r = restoreStore.getResource(resourceRef.getPath());
+              if (!r.exists()) {
+                r = null;
               }
+              resource = r;
             }
+          }
           // Scale concurrently for each pixel density
           List<DiaExport> exports;
           if (resource == null) {
