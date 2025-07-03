@@ -23,7 +23,7 @@
 * [Project Home](https://semanticcms.com/dia/renderer/html/)
 * [Changelog](https://semanticcms.com/dia/renderer/html/changelog)
 * [API Docs](https://semanticcms.com/dia/renderer/html/apidocs/)
-* [Maven Central Repository](https://central.sonatype.com/artifact/com.semanticcms/semanticcms-dia-renderer-html)
+* [Central Repository](https://central.sonatype.com/artifact/com.semanticcms/semanticcms-dia-renderer-html)
 * [GitHub](https://github.com/ao-apps/semanticcms-dia-renderer-html)
 
 ## Contact Us
