@@ -80,7 +80,7 @@ public final class DiaHtmlRenderer {
   private static final String WINDOWS_DIA_PATH = "C:\\Program Files (x86)\\Dia\\bin\\dia.exe";
 
   // This was used for opening the diagram, moved to semanticcms-openfile-servlet to avoid dependency.
-  //private static final String WINDOWS_DIAW_PATH = "C:\\Program Files (x86)\\Dia\\bin\\diaw.exe";
+  // private static final String WINDOWS_DIAW_PATH = "C:\\Program Files (x86)\\Dia\\bin\\diaw.exe";
 
   private static class TempDirLock {
     private TempDirLock() {
@@ -478,11 +478,11 @@ public final class DiaHtmlRenderer {
                   : (MISSING_IMAGE_HEIGHT * width / MISSING_IMAGE_WIDTH)
           ).alt(dia.getLabel())
               .__();
-          //if (resourceFile == null) {
-          //  LinkImpl.writeBrokenPathInXhtmlAttribute(pageRef, out);
-          //} else {
-          //  encodeTextInXhtmlAttribute(resourceFile.getName(), out);
-          //}
+          // if (resourceFile == null) {
+          //   LinkImpl.writeBrokenPathInXhtmlAttribute(pageRef, out);
+          // } else {
+          //   encodeTextInXhtmlAttribute(resourceFile.getName(), out);
+          // }
 
           if (export != null && PIXEL_DENSITIES.length > 1) {
             assert resource != null && resource.exists();
@@ -515,13 +515,13 @@ public final class DiaHtmlRenderer {
             // Write script to hide alt links and select best based on device pixel ratio
             try (JavaScriptWriter script = content.script()._c()) {
               // hide alt links
-              //for (int i=1; i<PIXEL_DENSITIES.length; i++) {
-              //  final long altLinkNum = altLinkNums[i];
-              //  scriptOut
-              //    .write("document.getElementById(\"" + ALT_LINK_ID_PREFIX)
-              //    .write(Long.toString(altLinkNum))
-              //    .write("\").style.display = \"none\";\n");
-              //}
+              // for (int i=1; i<PIXEL_DENSITIES.length; i++) {
+              //   final long altLinkNum = altLinkNums[i];
+              //   scriptOut
+              //     .write("document.getElementById(\"" + ALT_LINK_ID_PREFIX)
+              //     .write(Long.toString(altLinkNum))
+              //     .write("\").style.display = \"none\";\n");
+              // }
               // select best based on device pixel ratio
               script.write("if (window.devicePixelRatio) {\n");
               // Closure for locally scoped variables

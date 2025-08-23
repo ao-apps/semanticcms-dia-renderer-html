@@ -68,7 +68,7 @@ public class DiaExportServlet extends HttpServlet {
       return null;
     }
     String heightStr = pathInfo.substring(dimSepPos + 1, pathInfo.length() - DiaHtmlRenderer.PNG_EXTENSION.length());
-    //log("heightStr=" +heightStr);
+    // log("heightStr=" +heightStr);
     Integer height;
     if (heightStr.length() == 1 && heightStr.charAt(0) == DiaHtmlRenderer.EMPTY_SIZE) {
       height = null;
@@ -79,14 +79,14 @@ public class DiaExportServlet extends HttpServlet {
         return null;
       }
     }
-    //log("height=" +height);
+    // log("height=" +height);
     // Find width
     int sizeSepPos = pathInfo.lastIndexOf(DiaHtmlRenderer.SIZE_SEPARATOR, dimSepPos - 1);
     if (sizeSepPos == -1) {
       return null;
     }
     String widthStr = pathInfo.substring(sizeSepPos + 1, dimSepPos);
-    //log("widthStr=" +widthStr);
+    // log("widthStr=" +widthStr);
     Integer width;
     if (widthStr.length() == 1 && widthStr.charAt(0) == DiaHtmlRenderer.EMPTY_SIZE) {
       width = null;
@@ -97,7 +97,7 @@ public class DiaExportServlet extends HttpServlet {
         return null;
       }
     }
-    //log("width=" +width);
+    // log("width=" +width);
     // Must have at least width or height to continue
     if (width == null && height == null) {
       return null;
