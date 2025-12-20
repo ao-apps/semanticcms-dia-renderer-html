@@ -34,8 +34,8 @@ def upstreamProjects = [
   '../../oss/hodgepodge', // <groupId>com.aoapps</groupId><artifactId>ao-hodgepodge</artifactId>
   '../../oss/lang', // <groupId>com.aoapps</groupId><artifactId>ao-lang</artifactId>
   '../../oss/net-types', // <groupId>com.aoapps</groupId><artifactId>ao-net-types</artifactId>
-  '../../oss/servlet-last-modified-javaee', // <groupId>com.aoapps</groupId><artifactId>ao-servlet-last-modified</artifactId>
-  '../../oss/servlet-util-javaee', // <groupId>com.aoapps</groupId><artifactId>ao-servlet-util</artifactId>
+  '../../oss/servlet-last-modified', // <groupId>com.aoapps</groupId><artifactId>ao-servlet-last-modified</artifactId>
+  '../../oss/servlet-util', // <groupId>com.aoapps</groupId><artifactId>ao-servlet-util</artifactId>
   // No Jenkins: <groupId>javax.servlet</groupId><artifactId>javax.servlet-api</artifactId>
   '../core/controller', // <groupId>com.semanticcms</groupId><artifactId>semanticcms-core-controller</artifactId>
   '../core/model', // <groupId>com.semanticcms</groupId><artifactId>semanticcms-core-model</artifactId>
