@@ -1,6 +1,6 @@
 /*
  * semanticcms-dia-renderer-html - Dia-based diagrams embedded in HTML in a Servlet environment.
- * Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2024, 2025  AO Industries, Inc.
+ * Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2024, 2025, 2026  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -51,6 +51,10 @@ import com.semanticcms.core.resources.Resource;
 import com.semanticcms.core.resources.ResourceConnection;
 import com.semanticcms.core.resources.ResourceStore;
 import com.semanticcms.dia.model.Dia;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.File;
@@ -63,10 +67,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public final class DiaHtmlRenderer {
 
